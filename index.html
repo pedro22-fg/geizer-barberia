@@ -605,6 +605,12 @@
       transition: all 0.4s ease;
     }
     .notif.show { transform: translateY(0); opacity: 1; }
+
+    /* Ocultar cursor personalizado en celulares */
+    @media (hover: none), (pointer: coarse) {
+      body { cursor: auto !important; }
+      .cursor, .cursor-follower { display: none !important; }
+    }
   </style>
 </head>
 <body>
