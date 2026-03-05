@@ -28,29 +28,29 @@
       cursor: none;
     }
 
-    /* Custom cursor */
+    /* Custom cursor — flecha minimalista dorada */
     .cursor {
-      width: 12px; height: 12px;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .cursor svg {
+      width: 22px; height: 22px;
+      filter: drop-shadow(0 0 4px rgba(201,168,76,0.5));
+      transition: transform 0.08s ease, filter 0.08s ease;
+    }
+    .cursor-follower {
+      width: 6px; height: 6px;
       background: var(--gold);
       border-radius: 50%;
       position: fixed; top: 0; left: 0;
       pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.15s ease;
-      mix-blend-mode: difference;
-    }
-    .cursor-follower {
-      width: 36px; height: 36px;
-      border: 1px solid var(--gold);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none;
       z-index: 9998;
-      transition: all 0.35s ease;
-      opacity: 0.5;
+      transition: all 0.06s ease;
+      opacity: 0.6;
     }
-    .cursor.expand { transform: scale(3); }
-    .cursor-follower.expand { transform: scale(2); opacity: 0.2; }
+    .cursor.expand svg { transform: scale(1.5); filter: drop-shadow(0 0 10px rgba(201,168,76,0.9)); }
+    .cursor-follower.expand { transform: scale(4); opacity: 0.1; }
 
     /* NAV */
     nav {
@@ -610,7 +610,7 @@
 <body>
 
   <!-- Cursor -->
-  <div class="cursor" id="cursor"></div>
+  <div class="cursor" id="cursor"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2L20 12L12 13.5L8 20L4 2Z" fill="#c9a84c" stroke="#c9a84c" stroke-width="0.5" stroke-linejoin="round"/></svg></div>
   <div class="cursor-follower" id="cursorFollower"></div>
 
   <!-- Notification -->
@@ -930,11 +930,11 @@
     let mx = 0, my = 0, fx = 0, fy = 0;
     document.addEventListener('mousemove', e => {
       mx = e.clientX; my = e.clientY;
-      cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+      cursor.style.transform = `translate(${mx}px, ${my}px)`;
     });
     function animFollower() {
-      fx += (mx - fx - 18) * 0.12;
-      fy += (my - fy - 18) * 0.12;
+      fx += (mx - fx - 18) * 0.35;
+      fy += (my - fy - 18) * 0.35;
       follower.style.transform = `translate(${fx}px, ${fy}px)`;
       requestAnimationFrame(animFollower);
     }
