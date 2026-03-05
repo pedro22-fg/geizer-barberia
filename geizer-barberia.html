@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geizer Barbería</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --off-white: #f5f0eb;
+      --cream: #e8e0d5;
+      --gold: #c9a84c;
+      --gold-light: #e8c96e;
+      --gray: #7a7570;
+      --mid: #2a2520;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--off-white);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-follower {
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.35s ease;
+      opacity: 0.5;
+    }
+    .cursor.expand { transform: scale(3); }
+    .cursor-follower.expand { transform: scale(2); opacity: 0.2; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; width: 100%;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 60px;
+      mix-blend-mode: normal;
+      transition: background 0.4s ease, padding 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(10px);
+      padding: 18px 60px;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex; gap: 42px; list-style: none;
+    }
+    .nav-links a {
+      color: var(--off-white);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 140px 60px 80px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-tag {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 40px; height: 1px;
+      background: var(--gold);
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 9vw, 140px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-desc {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--gray);
+      max-width: 340px;
+      margin-bottom: 52px;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--gold);
+      color: var(--black);
+      text-decoration: none;
+      padding: 18px 36px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: background 0.3s, gap 0.3s;
+      width: fit-content;
+    }
+    .hero-cta:hover { background: var(--gold-light); gap: 24px; }
+    .hero-cta svg { width: 18px; height: 18px; }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #1a1510 0%, #0d0b08 100%);
+    }
+    .hero-pattern {
+      position: absolute; inset: 0;
+      opacity: 0.06;
+      background-image: repeating-linear-gradient(
+        45deg,
+        var(--gold) 0,
+        var(--gold) 1px,
+        transparent 0,
+        transparent 50%
+      );
+      background-size: 20px 20px;
+    }
+    .hero-scissors {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 180px;
+      opacity: 0.08;
+      animation: rotateSlow 20s linear infinite;
+    }
+    @keyframes rotateSlow {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .hero-badge {
+      position: absolute;
+      bottom: 60px; right: 60px;
+      width: 130px; height: 130px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: spinBadge 15s linear infinite;
+    }
+    @keyframes spinBadge {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hero-badge-inner {
+      animation: spinBadge 15s linear infinite reverse;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .hero-badge .num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .hero-badge .stars { color: var(--gold); font-size: 10px; letter-spacing: 2px; }
+    .hero-badge .label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-top: 4px; }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+    .hero-scroll span {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* STRIP */
+    .strip {
+      background: var(--gold);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .strip-track {
+      display: inline-flex;
+      animation: marquee 18s linear infinite;
+      gap: 0;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .strip-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 4px;
+      color: var(--black);
+      padding: 0 40px;
+      display: inline-flex; align-items: center; gap: 20px;
+    }
+    .strip-dot { width: 5px; height: 5px; background: var(--black); border-radius: 50%; }
+
+    /* SECTIONS common */
+    section { padding: 120px 60px; }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .section-label::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 6vw, 90px);
+      line-height: 1;
+      letter-spacing: 1px;
+      margin-bottom: 60px;
+    }
+
+    /* SERVICIOS */
+    #servicios { background: var(--black); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .service-card {
+      background: var(--mid);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      cursor: default;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.4s ease;
+    }
+    .service-card:hover { background: #1e1a16; }
+    .service-card:hover::before { width: 100%; }
+    .service-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 72px;
+      color: rgba(201,168,76,0.08);
+      line-height: 1;
+      margin-bottom: -10px;
+    }
+    .service-name {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .service-desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.8;
+      font-weight: 300;
+      margin-bottom: 28px;
+    }
+    .service-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+
+    /* GALERÍA */
+    #galeria { background: #080808; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 280px 280px;
+      gap: 3px;
+    }
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+      background: var(--mid);
+    }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-column: span 2; }
+    .gallery-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--gray);
+      transition: transform 0.6s ease;
+    }
+    .gallery-item:hover .gallery-placeholder { transform: scale(1.05); }
+    .gallery-placeholder svg { opacity: 0.3; }
+    .gallery-placeholder span {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: rgba(201,168,76,0.0);
+      transition: background 0.3s;
+    }
+    .gallery-item:hover .gallery-overlay { background: rgba(201,168,76,0.08); }
+
+    /* Barbershop pole SVG decoration */
+    .pole-wrap {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; width: 100%;
+      background: linear-gradient(180deg, #1a1510, #0d0b08);
+    }
+    .pole {
+      width: 60px; height: 180px;
+      border-radius: 30px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #c9a84c 0px, #c9a84c 20px,
+        #f5f0eb 20px, #f5f0eb 40px,
+        #c62a2a 40px, #c62a2a 60px
+      );
+      box-shadow: 0 0 30px rgba(201,168,76,0.2);
+    }
+
+    /* RESERVA */
+    #reserva { background: var(--black); }
+    .reserva-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .reserva-info p {
+      font-size: 15px; color: var(--gray); line-height: 1.9; font-weight: 300; margin-bottom: 40px;
+    }
+    .horarios {
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .horario-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .horario-row:first-child { border-top: 1px solid rgba(255,255,255,0.05); }
+    .horario-dia { font-size: 13px; font-weight: 300; color: var(--gray); letter-spacing: 1px; }
+    .horario-hora { font-size: 13px; color: var(--off-white); }
+    .horario-row.cerrado .horario-hora { color: var(--gray); opacity: 0.4; }
+
+    .form-group { margin-bottom: 24px; }
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--mid);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--off-white);
+      padding: 16px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.3s;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+    }
+    .form-group select option { background: #1a1510; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .btn-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      cursor: none;
+      transition: background 0.3s;
+      margin-top: 8px;
+    }
+    .btn-submit:hover { background: var(--gold-light); }
+
+    /* RESEÑAS */
+    #resenas {
+      background: var(--mid);
+      padding: 80px 60px;
+    }
+    .resenas-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    .resena-card {
+      background: var(--black);
+      padding: 40px;
+    }
+    .resena-stars { color: var(--gold); font-size: 14px; margin-bottom: 20px; letter-spacing: 3px; }
+    .resena-text {
+      font-size: 14px; font-weight: 300; font-style: italic;
+      color: var(--gray); line-height: 1.9; margin-bottom: 28px;
+    }
+    .resena-author { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--off-white); }
+
+    /* CONTACTO */
+    #contacto { background: var(--black); }
+    .contacto-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .contacto-items { display: flex; flex-direction: column; gap: 40px; }
+    .contacto-item { display: flex; gap: 24px; align-items: flex-start; }
+    .contacto-icon {
+      width: 46px; height: 46px;
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+    .contacto-item-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .contacto-item-value {
+      font-size: 14px;
+      color: var(--off-white);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+    .contacto-item-value a {
+      color: var(--off-white);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contacto-item-value a:hover { color: var(--gold); }
+
+    .map-placeholder {
+      background: var(--mid);
+      aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .map-placeholder iframe {
+      width: 100%; height: 100%;
+      border: none;
+      filter: grayscale(80%) invert(0.1) contrast(1.1);
+      opacity: 0.8;
+    }
+    .map-pin {
+      position: absolute;
+      width: 20px; height: 20px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: mapPing 2s ease-in-out infinite;
+    }
+    @keyframes mapPing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.4); }
+      50% { box-shadow: 0 0 0 20px rgba(201,168,76,0); }
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--mid);
+      padding: 48px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(201,168,76,0.1);
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 5px;
+      color: var(--gold);
+    }
+    .footer-copy { font-size: 12px; color: var(--gray); font-weight: 300; }
+    .social-links { display: flex; gap: 20px; }
+    .social-link {
+      width: 42px; height: 42px;
+      border: 1px solid rgba(201,168,76,0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      text-decoration: none;
+      transition: background 0.3s, border-color 0.3s;
+      font-size: 13px;
+    }
+    .social-link:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+    /* REVEAL animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Notification */
+    .notif {
+      position: fixed; bottom: 30px; right: 30px;
+      background: var(--gold);
+      color: var(--black);
+      padding: 16px 28px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+    .notif.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Notification -->
+  <div class="notif" id="notif">✓ Turno solicitado. Te contactaremos pronto.</div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">GEIZER</a>
+    <ul class="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="#reserva">Reservar</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-tag">Valentín Alsina · Buenos Aires</div>
+      <h1 class="hero-title">GEIZER<br><span>BARBE</span><br>RÍA</h1>
+      <p class="hero-desc">El arte del corte perfecto. Tradición, precisión y estilo en cada visita. La mejor barbería del barrio.</p>
+      <a href="#reserva" class="hero-cta">
+        Reservar turno
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-bg"></div>
+      <div class="hero-pattern"></div>
+      <div class="hero-scissors">✂</div>
+      <div class="hero-badge">
+        <div class="hero-badge-inner">
+          <span class="num">4.7</span>
+          <span class="stars">★★★★★</span>
+          <span class="label">82 reseñas</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- STRIP -->
+  <div class="strip">
+    <div class="strip-track">
+      <span class="strip-item">Corte de cabello <span class="strip-dot"></span></span>
+      <span class="strip-item">Afeitado clásico <span class="strip-dot"></span></span>
+      <span class="strip-item">Diseño de barba <span class="strip-dot"></span></span>
+      <span class="strip-item">Keratina <span class="strip-dot"></span></span>
+      <span class="strip-item">Tratamientos <span class="strip-dot"></span></span>
+      <span class="strip-item">Corte de cabello <span class="strip-dot"></span></span>
+      <span class="strip-item">Afeitado clásico <span class="strip-dot"></span></span>
+      <span class="strip-item">Diseño de barba <span class="strip-dot"></span></span>
+      <span class="strip-item">Keratina <span class="strip-dot"></span></span>
+      <span class="strip-item">Tratamientos <span class="strip-dot"></span></span>
+    </div>
+  </div>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <div class="section-label reveal">Nuestros servicios</div>
+    <h2 class="section-title reveal">LO QUE<br>HACEMOS</h2>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-num">01</div>
+        <div class="service-name">Corte de Cabello</div>
+        <p class="service-desc">Corte clásico o moderno adaptado a tu estilo. Terminado con secado y peinado incluido.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">02</div>
+        <div class="service-name">Corte + Barba</div>
+        <p class="service-desc">Combo completo. Corte de cabello más diseño y perfilado de barba con navaja.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">03</div>
+        <div class="service-name">Diseño de Barba</div>
+        <p class="service-desc">Perfilado, delineado y arreglo completo de barba. Con productos premium de acabado.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">04</div>
+        <div class="service-name">Afeitado Clásico</div>
+        <p class="service-desc">Afeitado a navaja con toalla caliente, pre-shave y post-shave. La experiencia completa.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">05</div>
+        <div class="service-name">Corte Infantil</div>
+        <p class="service-desc">Corte para los más chicos, con paciencia y cuidado. Hasta 12 años.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">06</div>
+        <div class="service-name">Tratamientos</div>
+        <p class="service-desc">Keratina, hidratación capilar y tratamientos para cabello y cuero cabelludo.</p>
+        <div class="service-price">CONSULTAR</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="galeria" style="padding-bottom:0">
+    <div class="section-label reveal">Trabajos</div>
+    <h2 class="section-title reveal">GALERÍA</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal">
+        <div class="gallery-overlay"></div>
+        <div class="pole-wrap">
+          <div class="pole"></div>
+        </div>
+      </div>
+      <div class="gallery-item reveal">
+        <div class="gallery-overlay"></div>
+        <div class="gallery-placeholder" style="background:linear-gradient(135deg,#1a1510,#0d0b08)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1"><path d="M12 2C8 2 6 6 6 10c0 5 6 12 6 12s6-7 6-12c0-4-2-8-6-8z"/><circle cx="12" cy="10" r="2"/></svg>
+          <span>Corte Fade</span>
+        </div>
+      </div>
+      <div class="gallery-item reveal">
+        <div class="gallery-overlay"></div>
+        <div class="gallery-placeholder" style="background:linear-gradient(135deg,#12100d,#1a1510)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1"><path d="M6 9c3.5 0 5.5 2 9 2"/><path d="M6 15c3.5 0 5.5-2 9-2"/><circle cx="5" cy="9" r="1"/><circle cx="5" cy="15" r="1"/></svg>
+          <span>Diseño Barba</span>
+        </div>
+      </div>
+      <div class="gallery-item reveal">
+        <div class="gallery-overlay"></div>
+        <div class="gallery-placeholder" style="background:linear-gradient(135deg,#0d0b08,#1a1510)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1"><path d="M9 3L5 7l4 4M15 3l4 4-4 4"/><path d="M5 19l7-15 7 15"/></svg>
+          <span>Corte Clásico</span>
+        </div>
+      </div>
+      <div class="gallery-item reveal" style="grid-column:span 2;">
+        <div class="gallery-overlay"></div>
+        <div class="gallery-placeholder" style="background:linear-gradient(135deg,#1e1a16,#12100d); flex-direction:row; gap:40px;">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="0.8"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#c9a84c;letter-spacing:3px;">GEIZER BARBERÍA</div>
+            <div style="font-size:12px;color:#7a7570;letter-spacing:2px;margin-top:8px;">VALENTÍN ALSINA · DESDE 2020</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEÑAS -->
+  <div id="resenas">
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:50px;">
+      <div class="section-label" style="margin-bottom:0">Lo que dicen</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;">★ 4.7 / 5 · 82 reseñas en Google</div>
+    </div>
+    <div class="resenas-track">
+      <div class="resena-card reveal">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-text">"Excelente atención de parte de los chicos, siempre vengo con ideas locas que ellos saben plasmar con exactitud. Para mí la mejor barbería del barrio."</p>
+        <div class="resena-author">Per Perez · Google</div>
+      </div>
+      <div class="resena-card reveal">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-text">"Altamente recomendable, excelente en todo sentido. Ariel un genio. Si todavía no encontraste un estilista que te haga sentir bien, lo recomiendo. Volvería siempre."</p>
+        <div class="resena-author">Alberto M. Soreian · Google</div>
+      </div>
+      <div class="resena-card reveal">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-text">"Me encantó el lugar, tan retro y con buena música. Muy buena atención y excelente servicio. Sin dudas el mejor corte que me hice en mucho tiempo."</p>
+        <div class="resena-author">Cliente Google</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESERVA -->
+  <section id="reserva">
+    <div class="section-label reveal">Agenda tu visita</div>
+    <h2 class="section-title reveal">RESERVAR<br>TURNO</h2>
+    <div class="reserva-layout">
+      <div class="reserva-info reveal">
+        <p>Reservá tu lugar y asegurate la atención. Nos comunicaremos para confirmar tu turno a la brevedad.</p>
+        <div class="horarios">
+          <div class="horario-row">
+            <span class="horario-dia">Lunes — Viernes</span>
+            <span class="horario-hora">10:30 — 20:00</span>
+          </div>
+          <div class="horario-row">
+            <span class="horario-dia">Sábado</span>
+            <span class="horario-hora">10:30 — 18:00</span>
+          </div>
+          <div class="horario-row cerrado">
+            <span class="horario-dia">Domingo</span>
+            <span class="horario-hora">Cerrado</span>
+          </div>
+        </div>
+      </div>
+      <form class="reserva-form reveal" id="reservaForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" required />
+          </div>
+          <div class="form-group">
+            <label>Teléfono / WhatsApp</label>
+            <input type="tel" placeholder="+54 11 ..." required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Servicio</label>
+          <select>
+            <option value="">Seleccioná un servicio</option>
+            <option>Corte de Cabello</option>
+            <option>Corte + Barba</option>
+            <option>Diseño de Barba</option>
+            <option>Afeitado Clásico</option>
+            <option>Corte Infantil</option>
+            <option>Tratamientos</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha preferida</label>
+            <input type="date" />
+          </div>
+          <div class="form-group">
+            <label>Horario preferido</label>
+            <select>
+              <option>10:30 — 12:00</option>
+              <option>12:00 — 14:00</option>
+              <option>14:00 — 16:00</option>
+              <option>16:00 — 18:00</option>
+              <option>18:00 — 20:00</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">Solicitar turno →</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" style="background:var(--mid);">
+    <div class="section-label reveal">Encontranos</div>
+    <h2 class="section-title reveal">CONTACTO</h2>
+    <div class="contacto-layout">
+      <div class="contacto-items reveal">
+        <div class="contacto-item">
+          <div class="contacto-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contacto-item-label">Dirección</div>
+            <div class="contacto-item-value">Presidente Perón 2494<br>Valentín Alsina, Lanús<br>Buenos Aires, Argentina</div>
+          </div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="contacto-item-label">WhatsApp</div>
+            <div class="contacto-item-value">
+              <a href="https://wa.me/54" target="_blank">Envianos un mensaje</a>
+            </div>
+          </div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          </div>
+          <div>
+            <div class="contacto-item-label">Instagram</div>
+            <div class="contacto-item-value">
+              <a href="https://instagram.com" target="_blank">@geizerbarberia</a>
+            </div>
+          </div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div>
+            <div class="contacto-item-label">Horarios</div>
+            <div class="contacto-item-value">Lun–Vie: 10:30 – 20:00<br>Sábado: 10:30 – 18:00</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-placeholder reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.8!2d-58.4!3d-34.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQyJzAwLjAiUyA1OMKwMjQnMDAuMCJX!5e0!3m2!1ses!2sar!4v1000000000000"
+          loading="lazy" title="Ubicación Geizer Barbería">
+        </iframe>
+        <div class="map-pin"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">GEIZER</div>
+    <div class="footer-copy">© 2026 Geizer Barbería · Valentín Alsina, Buenos Aires</div>
+    <div class="social-links">
+      <a href="https://instagram.com" target="_blank" class="social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      </a>
+      <a href="https://wa.me/54" target="_blank" class="social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+    });
+    function animFollower() {
+      fx += (mx - fx - 18) * 0.12;
+      fy += (my - fy - 18) * 0.12;
+      follower.style.transform = `translate(${fx}px, ${fy}px)`;
+      requestAnimationFrame(animFollower);
+    }
+    animFollower();
+    document.querySelectorAll('a, button, .service-card, .gallery-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.classList.add('expand'); follower.classList.add('expand'); });
+      el.addEventListener('mouseleave', () => { cursor.classList.remove('expand'); follower.classList.remove('expand'); });
+    });
+
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Form submit
+    document.getElementById('reservaForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const notif = document.getElementById('notif');
+      notif.classList.add('show');
+      setTimeout(() => notif.classList.remove('show'), 4000);
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
