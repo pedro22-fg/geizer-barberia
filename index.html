@@ -999,13 +999,27 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Form submit
+    // Form submit -> WhatsApp
     document.getElementById('reservaForm').addEventListener('submit', e => {
       e.preventDefault();
-      const notif = document.getElementById('notif');
-      notif.classList.add('show');
-      setTimeout(() => notif.classList.remove('show'), 4000);
-      e.target.reset();
+      const form = e.target;
+      const nombre = form.querySelector('input[type=text]').value;
+      const telefono = form.querySelector('input[type=tel]').value;
+      const servicio = form.querySelectorAll('select')[0].value || 'No especificado';
+      const fecha = form.querySelector('input[type=date]').value || 'No especificada';
+      const horario = form.querySelectorAll('select')[1].value;
+
+      const msg = encodeURIComponent(
+        '¡Hola Geizer Barbería! Quiero reservar un turno 💈' +
+        '%0A%0A👤 Nombre: ' + nombre +
+        '%0A📱 Teléfono: ' + telefono +
+        '%0A✂️ Servicio: ' + servicio +
+        '%0A📅 Fecha: ' + fecha +
+        '%0A🕐 Horario: ' + horario
+      );
+
+      window.open('https://wa.me/5491156320523?text=' + msg, '_blank');
+      form.reset();
     });
   </script>
 </body>
