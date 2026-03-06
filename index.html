@@ -1009,14 +1009,13 @@
       const fecha = form.querySelector('input[type=date]').value || 'No especificada';
       const horario = form.querySelectorAll('select')[1].value;
 
-      const msg = encodeURIComponent(
-        '¡Hola Geizer Barbería! Quiero reservar un turno 💈' +
-        '%0A%0A👤 Nombre: ' + nombre +
-        '%0A📱 Teléfono: ' + telefono +
-        '%0A✂️ Servicio: ' + servicio +
-        '%0A📅 Fecha: ' + fecha +
-        '%0A🕐 Horario: ' + horario
-      );
+      const texto = 'Hola Geizer Barberia! Quiero reservar un turno' +
+        ' - Nombre: ' + nombre +
+        ' - Telefono: ' + telefono +
+        ' - Servicio: ' + servicio +
+        ' - Fecha: ' + fecha +
+        ' - Horario: ' + horario;
+      const msg = encodeURIComponent(texto);
 
       window.open('https://wa.me/5491156320523?text=' + msg, '_blank');
       form.reset();
